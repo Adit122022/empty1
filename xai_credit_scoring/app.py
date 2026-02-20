@@ -800,22 +800,20 @@ with tab_global:
         ga,gb = st.columns(2)
         with ga:
             st.markdown('<div class="section-title">Top Risk Drivers (Global)</div>', unsafe_allow_html=True)
-            fig_g1, ax = plt.subplots(facecolor='#0d1929')
-            ax.set_facecolor('#081422')
-            shap.summary_plot(shap_vals_global, X, plot_type="bar", show=False,
-                              color='#f0c040', plot_size=None)
-            ax.tick_params(colors='#4a6080'); ax.xaxis.label.set_color('#4a6080')
-            for spine in ax.spines.values(): spine.set_edgecolor('#1a2d4a')
-            st.pyplot(fig_g1); plt.clf()
+            # Use st_shap with the modern bar plot API for better compatibility
+            # We wrap it to ensure it inherits the dark theme as much as possible
+            with plt.rc_context({'axes.facecolor': '#081422', 'figure.facecolor': '#0d1929', 
+                                 'text.color': '#94a3b8', 'axes.labelcolor': '#94a3b8', 
+                                 'xtick.color': '#4a6080', 'ytick.color': '#4a6080'}):
+                st_shap(shap.plots.bar(shap_vals_global, show=False), height=350)
 
         with gb:
             st.markdown('<div class="section-title">Directional Impact (Beeswarm)</div>', unsafe_allow_html=True)
-            fig_g2, ax2 = plt.subplots(facecolor='#0d1929')
-            ax2.set_facecolor('#081422')
-            shap.summary_plot(shap_vals_global, X, show=False, plot_size=None)
-            ax2.tick_params(colors='#4a6080'); ax2.xaxis.label.set_color('#4a6080')
-            for spine in ax2.spines.values(): spine.set_edgecolor('#1a2d4a')
-            st.pyplot(fig_g2); plt.clf()
+            # Use st_shap with the modern beeswarm plot API
+            with plt.rc_context({'axes.facecolor': '#081422', 'figure.facecolor': '#0d1929', 
+                                 'text.color': '#94a3b8', 'axes.labelcolor': '#94a3b8', 
+                                 'xtick.color': '#4a6080', 'ytick.color': '#4a6080'}):
+                st_shap(shap.plots.beeswarm(shap_vals_global, show=False), height=350)
 
         # Score distribution
         st.markdown('<div class="section-title">Score Distribution</div>', unsafe_allow_html=True)
@@ -905,7 +903,7 @@ with tab_sim:
             'existing_credits': 1, 'job': 2, 'num_dependents': 1,
             'own_telephone': 1, 'foreign_worker': 1,
         }
-        base_prob  = model.predict_proba(pd.DataFrame([base_feats]))[0][1]
+        base_prob  = model.predict_proba(pd.DataFrame([base_feats])[X.columns])[0][1]
         base_score = cibil(base_prob)
         seed_label = "Using default profile — check a PAN first for a personalised simulation"
 
@@ -989,8 +987,8 @@ with tab_sim:
                 sim_feats[feat_key] = opts.index(sel)
 
     with sim_right:
-        # Live prediction
-        sim_idf   = pd.DataFrame([sim_feats])
+        # Live prediction - ensure column order matches training data
+        sim_idf   = pd.DataFrame([sim_feats])[X.columns]
         sim_prob  = model.predict_proba(sim_idf)[0][1]
         sim_score = cibil(sim_prob)
         sim_g, sim_color, _, sim_ico = grade(sim_score)
