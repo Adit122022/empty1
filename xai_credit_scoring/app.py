@@ -1009,13 +1009,13 @@ with tab_sim:
 
         feature_configs = {
             'checking_status': {'label': '🏦 Checking Account Status', 'type': 'select',
-                'options': ['No Account (worst)', '< 0 DM (negative)', '0–200 DM (ok)', '> 200 DM (best)'],
+                'options': ['No Account (worst)', '< 0₹(negative)', '0–200₹(ok)', '> 200₹(best)'],
                 'help': 'Higher is better. A healthy checking account lowers risk.'},
             'credit_history': {'label': '📜 Credit History Quality', 'type': 'select',
                 'options': ['Critical/Other Account', 'No Credits Taken', 'All Paid Duly', 'Existing Paid', 'All Paid (best)'],
                 'help': 'Past repayment behaviour. 4 = perfect history.'},
             'savings_status': {'label': '💰 Savings Account Balance', 'type': 'select',
-                'options': ['No Savings (worst)', '< 100 DM', '100–500 DM', '500–1000 DM', '> 1000 DM (best)'],
+                'options': ['No Savings (worst)', '< 100 DM', '100–500 DM', '500–1000 DM', '> 1000₹(best)'],
                 'help': 'More savings = lower default risk.'},
             'employment': {'label': '💼 Employment Duration', 'type': 'select',
                 'options': ['Unemployed (worst)', '< 1 Year', '1–4 Years', '4–7 Years', '> 7 Years (best)'],
@@ -1200,7 +1200,7 @@ with tab_sim:
         st.markdown('<div class="section-title" style="font-size:.95rem;margin-top:16px;">💡 Top Actions to Improve</div>', unsafe_allow_html=True)
         recs = []
         if sim_feats['savings_status'] < 3:
-            recs.append(("💰 Increase Savings", "Move savings to 100–500+ DM band. Reduces risk significantly."))
+            recs.append(("💰 Increase Savings", "Move savings to 100–500+₹band. Reduces risk significantly."))
         if sim_feats['credit_history'] < 4:
             recs.append(("📜 Build Credit History", "Pay all dues on time for 6–12 months to reach 'All Paid' status."))
         if sim_feats['duration'] > 24:
@@ -1208,7 +1208,7 @@ with tab_sim:
         if sim_feats['credit_amount'] > 8000:
             recs.append(("💳 Reduce Loan Amount", f"Request ₹{sim_feats['credit_amount']-2000:,} instead of ₹{sim_feats['credit_amount']:,}."))
         if sim_feats['checking_status'] < 2:
-            recs.append(("🏦 Maintain Positive Balance", "Keep checking account above 0 DM consistently."))
+            recs.append(("🏦 Maintain Positive Balance", "Keep checking account above 0₹consistently."))
         if sim_feats['installment_commitment'] > 2:
             recs.append(("📊 Lower EMI Burden", "Consolidate or prepay existing loans to reduce commitment."))
         if not recs:
