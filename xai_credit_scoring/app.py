@@ -785,7 +785,8 @@ with tab_pan:
 # ══════════════════════════════════════════════
 with tab_under:
     if df is None:
-        st.warning("⚠️ Dataset not found. Please run `train_model.py` first.")
+        st.info("💡 **Analytics require training data.** To enable this tab on Streamlit Cloud, ensure `data/processed_credit_data.csv` is committed and pushed to your GitHub repository.")
+        st.warning("⚠️ Dataset not found. Please run `train_model.py` locally and push the resulting CSV.")
     else:
         st.markdown('<div class="section-header"><div class="section-title">👤 Individual Applicant Analysis</div><div class="section-line"></div></div>', unsafe_allow_html=True)
         idx = st.slider("Select Applicant ID", 0, len(X)-1, 0)
@@ -851,6 +852,7 @@ with tab_under:
 # ══════════════════════════════════════════════
 with tab_global:
     if df is None:
+        st.info("💡 **Portfolio Analytics require training data.** To enable this tab, upload your processed dataset to the `data/` folder.")
         st.warning("⚠️ Dataset not found. Please run `train_model.py` first.")
     else:
         st.markdown('<div class="section-header"><div class="section-title">🌍 Portfolio-Level Risk Analytics</div><div class="section-line"></div></div>', unsafe_allow_html=True)
@@ -921,6 +923,7 @@ with tab_global:
 # ══════════════════════════════════════════════
 with tab_fair:
     if df is None:
+        st.info("💡 **Fairness Audits require training data.** Demographic parity is calculated based on the full portfolio distribution.")
         st.warning("⚠️ Dataset not found. Please run `train_model.py` first.")
     else:
         st.markdown('<div class="section-header"><div class="section-title">⚖️ AI Fairness & Regulatory Compliance</div><div class="section-line"></div></div>', unsafe_allow_html=True)
