@@ -357,8 +357,16 @@ with st.sidebar:
     pan_api_client = build_api_client(provider_key, api_key_val, api_secret_val)
 
 # ─────────────────────────────────────────────
-#  LOAD ASSETS
+#  ASSETS & FEATURES
 # ─────────────────────────────────────────────
+ALL_FEATURES = [
+    'checking_status', 'duration', 'credit_history', 'purpose', 'credit_amount', 
+    'savings_status', 'employment', 'installment_commitment', 'personal_status', 
+    'other_parties', 'residence_since', 'property_magnitude', 'age', 
+    'other_payment_plans', 'housing', 'existing_credits', 'job', 
+    'num_dependents', 'own_telephone', 'foreign_worker'
+]
+
 @st.cache_data
 def load_data():
     p = 'data/processed_credit_data.csv'
@@ -366,16 +374,11 @@ def load_data():
 
 @st.cache_resource
 def load_model():
-    # Get the directory where app.py is located
     base_path = os.path.dirname(__file__)
-    # Combine it with your filename
     model_path = os.path.join(base_path, 'model.pkl')
-    
-    # Debugging check (will show in logs if it fails)
     if not os.path.exists(model_path):
         st.error(f"❌ Could not find model at: {model_path}")
         st.stop()
-        
     with open(model_path, 'rb') as f:
         return pickle.load(f)
 
@@ -387,12 +390,15 @@ def load_encoders():
 df = load_data()
 model = load_model()
 encoders = load_encoders()
+
 if df is not None:
     X = df.drop('target', axis=1)
     explainer_global = shap.TreeExplainer(model)
     shap_vals_global = explainer_global(X)
 else:
-    X = None; explainer_global = None; shap_vals_global = None
+    # Robust fallback: Create an empty DataFrame with expected columns
+    X = pd.DataFrame(columns=ALL_FEATURES)
+    explainer_global = None; shap_vals_global = None
 
 # ─────────────────────────────────────────────
 #  HELPERS
@@ -983,7 +989,9 @@ with tab_sim:
             'existing_credits': 1, 'job': 2, 'num_dependents': 1,
             'own_telephone': 1, 'foreign_worker': 1,
         }
-        base_prob  = model.predict_proba(pd.DataFrame([base_feats])[X.columns])[0][1]
+        # Use X.columns if X exists and is not empty, else fallback to ALL_FEATURES
+        cols = X.columns if (X is not None and not X.empty) else ALL_FEATURES
+        base_prob  = model.predict_proba(pd.DataFrame([base_feats])[cols])[0][1]
         base_score = cibil(base_prob)
         seed_label = "Using default profile — check a PAN first for a personalised simulation"
 
@@ -1078,7 +1086,8 @@ with tab_sim:
 
     with sim_right:
         # Live prediction - ensure column order matches training data
-        sim_idf   = pd.DataFrame([sim_feats])[X.columns]
+        cols = X.columns if (X is not None and not X.empty) else ALL_FEATURES
+        sim_idf   = pd.DataFrame([sim_feats])[cols]
         sim_prob  = model.predict_proba(sim_idf)[0][1]
         sim_score = cibil(sim_prob)
         sim_g, sim_color, _, sim_ico = grade(sim_score)
