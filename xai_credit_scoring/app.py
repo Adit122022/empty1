@@ -369,7 +369,8 @@ ALL_FEATURES = [
 
 @st.cache_data
 def load_data():
-    p = 'data/processed_credit_data.csv'
+    base_path = os.path.dirname(__file__)
+    p = os.path.join(base_path, 'data', 'processed_credit_data.csv')
     return pd.read_csv(p) if os.path.exists(p) else None
 
 @st.cache_resource
@@ -384,7 +385,8 @@ def load_model():
 
 @st.cache_resource
 def load_encoders():
-    p = 'models/encoders.pkl'
+    base_path = os.path.dirname(__file__)
+    p = os.path.join(base_path, 'models', 'encoders.pkl')
     return pickle.load(open(p,'rb')) if os.path.exists(p) else {}
 
 df = load_data()
