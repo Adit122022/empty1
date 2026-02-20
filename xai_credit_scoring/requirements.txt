@@ -11,4 +11,3 @@ fairlearn
 matplotlib
 
 
-streamlit pandas numpy scikit-learn xgboost lightgbm shap plotly streamlit-shap fairlearn matplotlib
