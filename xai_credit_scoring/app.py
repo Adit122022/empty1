@@ -366,7 +366,17 @@ def load_data():
 
 @st.cache_resource
 def load_model():
-    with open('model.pkl', 'rb') as f:
+    # Get the directory where app.py is located
+    base_path = os.path.dirname(__file__)
+    # Combine it with your filename
+    model_path = os.path.join(base_path, 'model.pkl')
+    
+    # Debugging check (will show in logs if it fails)
+    if not os.path.exists(model_path):
+        st.error(f"❌ Could not find model at: {model_path}")
+        st.stop()
+        
+    with open(model_path, 'rb') as f:
         return pickle.load(f)
 
 @st.cache_resource
