@@ -60,7 +60,9 @@ section[data-testid="stSidebar"] > div { background: #070c18; border-right: 1px 
 
 /* ── Hide default menu/footer but keep sidebar toggle ── */
 #MainMenu, footer { visibility: hidden; }
-header { background: transparent !important; }
+header[data-testid="stHeader"] { visibility: hidden; height: 0; }
+button[data-testid="stSidebarCollapseButton"] { display: none; }
+section[data-testid="stSidebar"] button[kind="secondary"] { display: none; }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #0a0f1e; }
